@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import time
 import os.path
 import pandas as pd
+import imdb
 
 files_list = r"C:\Users\User\Desktop\CS\sem 6\humanities\links.txt"
 english_names = r"C:\Users\User\Desktop\CS\sem 6\humanities\movies_heb_eng.csv"
@@ -101,7 +102,7 @@ def read_archive(inputfile,outputfile,begin_at_line=0):
     finally:
         df.to_csv(files_metadata, index=False)
 
-def clean_metadata(df):
+def clean_metadata(df):  
     # remove duplicate english named columns
     df = df.iloc[:, :-7] # drop last 7 columns
 
@@ -112,6 +113,19 @@ def clean_metadata(df):
 
     df = df[~df['Description'].str.contains('מחזה', na=True)]
     return df
+
+def imdb_metadata(df):
+    db = imdb.IMDb()
+    origin_country = []
+    genre = []
+    for i, row in df.iterrows():
+        imdb_id = row['imdb_id'][2:]
+        movie = db.get_movie(imdb_id)
+        origin_country.append(movie['country'])
+        genre.append(movie['genre'])
+
+    df['genre'] = genre
+    df['origin country'] = origin_country
 
 def main():
     # assuming for now there are no more than 8K items in the movie category at the archive
@@ -128,6 +142,10 @@ def main():
 
     df = df.merge(df_english, left_on='Name', right_on='hebrewTitle')
     df['IMDB Link'] = 'https://www.imdb.com/title/' + df['imdb_id']
+
+    # get additional metadata from IMDb
+    imdb_metadata(df)
+
     df.to_csv("temp.csv")
 
 
