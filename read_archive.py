@@ -1,3 +1,4 @@
+from numpy import datetime64
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
@@ -119,6 +120,7 @@ def imdb_metadata(df):
     origin_country = []
     genre = []
     for i, row in df.iterrows():
+        print("{}: getting imdb metadata".format(i))
         imdb_id = row['imdb_id'][2:]
         movie = db.get_movie(imdb_id)
         origin_country.append(movie['country'])
@@ -129,10 +131,10 @@ def imdb_metadata(df):
 
 def main():
     # assuming for now there are no more than 8K items in the movie category at the archive
-    get_links(r"https://www.archives.gov.il/catalogue/group/1?objHier_archiveName_ss=%D7%A6%D7%A0%D7%96%D7%95%D7%A8%D7%94%20%D7%9C%D7%A1%D7%A8%D7%98%D7%99%D7%9D%20%D7%95%D7%9E%D7%97%D7%96%D7%95%D7%AA&kw=%D7%94%D7%9E%D7%95%D7%A2%D7%A6%D7%94%20%D7%9C%D7%91%D7%99%D7%A7%D7%95%D7%A8%D7%AA%20%D7%A1%D7%A8%D7%98%D7%99%D7%9D&scanned_items=true&itemsPerPage=8000")
+    # get_links(r"https://www.archives.gov.il/catalogue/group/1?objHier_archiveName_ss=%D7%A6%D7%A0%D7%96%D7%95%D7%A8%D7%94%20%D7%9C%D7%A1%D7%A8%D7%98%D7%99%D7%9D%20%D7%95%D7%9E%D7%97%D7%96%D7%95%D7%AA&kw=%D7%94%D7%9E%D7%95%D7%A2%D7%A6%D7%94%20%D7%9C%D7%91%D7%99%D7%A7%D7%95%D7%A8%D7%AA%20%D7%A1%D7%A8%D7%98%D7%99%D7%9D&scanned_items=true&itemsPerPage=8000")
 
     # read archive metadata and save to metadata.csv
-    read_archive(files_list, files_metadata, 0)
+    # read_archive(files_list, files_metadata, 0)
 
     # clean the metadata file from uneccessary columns etc..
     df = clean_metadata(pd.read_csv(files_metadata))
@@ -146,8 +148,28 @@ def main():
     # get additional metadata from IMDb
     imdb_metadata(df)
 
-    df.to_csv("temp.csv")
+    df.to_csv("temp.csv", encoding='utf-8', index=False)
 
 
 if __name__ == "__main__":
+    # clean the characters '[] from the imdb gathered data because it returns as list 
+    # import re
+    # chars_to_remove = ["'", '[', ']']
+    # regular_expression = '[' + re.escape (''. join (chars_to_remove)) + ']'
+    # df = pd.read_csv('temp_utf8.csv')
+    # df['origin country'] = df['origin country'].str.replace(regular_expression, '', regex=True)
+    # df['genre'] = df['genre'].str.replace(regular_expression, '', regex=True)
+    # df.to_csv("temp_proc.csv")
+
+    # clean the non matching rows which the year of material is before the movie even released
+    # df = pd.read_csv('final_clean.csv')
+    # to_drop = []
+    # for i, row in df.iterrows():
+    #     material_year = int(row['Material period up to'].split('/')[-1])
+    #     # print(material_year, row['year'])
+    #     if material_year < row['year']:
+    #         to_drop.append(i)            
+    # df = df.drop(to_drop)
+    # df.to_csv("final_clean_years.csv", index=False)
+
     main()
