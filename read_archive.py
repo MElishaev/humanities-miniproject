@@ -131,10 +131,10 @@ def imdb_metadata(df):
 
 def main():
     # assuming for now there are no more than 8K items in the movie category at the archive
-    # get_links(r"https://www.archives.gov.il/catalogue/group/1?objHier_archiveName_ss=%D7%A6%D7%A0%D7%96%D7%95%D7%A8%D7%94%20%D7%9C%D7%A1%D7%A8%D7%98%D7%99%D7%9D%20%D7%95%D7%9E%D7%97%D7%96%D7%95%D7%AA&kw=%D7%94%D7%9E%D7%95%D7%A2%D7%A6%D7%94%20%D7%9C%D7%91%D7%99%D7%A7%D7%95%D7%A8%D7%AA%20%D7%A1%D7%A8%D7%98%D7%99%D7%9D&scanned_items=true&itemsPerPage=8000")
+    get_links(r"https://www.archives.gov.il/catalogue/group/1?objHier_archiveName_ss=%D7%A6%D7%A0%D7%96%D7%95%D7%A8%D7%94%20%D7%9C%D7%A1%D7%A8%D7%98%D7%99%D7%9D%20%D7%95%D7%9E%D7%97%D7%96%D7%95%D7%AA&kw=%D7%94%D7%9E%D7%95%D7%A2%D7%A6%D7%94%20%D7%9C%D7%91%D7%99%D7%A7%D7%95%D7%A8%D7%AA%20%D7%A1%D7%A8%D7%98%D7%99%D7%9D&scanned_items=true&itemsPerPage=8000")
 
     # read archive metadata and save to metadata.csv
-    # read_archive(files_list, files_metadata, 0)
+    read_archive(files_list, files_metadata, 0)
 
     # clean the metadata file from uneccessary columns etc..
     df = clean_metadata(pd.read_csv(files_metadata))
